@@ -24,9 +24,9 @@ def player(board):
     if board == initial_state():
         P = X
     else:
-        count_X = len([i for i in board if i.count(X) != 0])
-        count_O = len([i for i in board if i.count(O) != 0])
-        if count_O > count_X:
+        count_X = sum([i.count(X) for i in board if i.count(X) != 0])
+        count_O = sum([i.count(O) for i in board if i.count(O) != 0])
+        if count_O >= count_X:
             P = X
         else:
             P = O
@@ -82,7 +82,6 @@ def terminal(board):
     game = len([x for y in board for x in y if x == EMPTY])
     return game == 0
 
-
 def utility(board):
     """
     Returns 1 if X has won the game, -1 if O has won, 0 otherwise.
@@ -99,31 +98,23 @@ def minimax(board):
     """
     Returns the optimal action for the current player on the board.
     """
-    v = []
-    if terminal(board):
-        return utility(board)
-    for action in actions(board):
-        v.append(result(board, action))
-    lo = hi = EMPTY 
-    for val in v:
-        if val is EMPTY or val < lo:
-            lo = val
-        elif  val is EMPTY or val > hi:
-            hi = val
-    return (lo, hi)
-    
-
-
-
+    minv = min_value(board)
+    l = [i for i in minv[1] if i[0] == minv[0]]
+    return random.choice(l)[1]
+            
 def max_value(board):
     v = -math.inf
     max_values = []
     if terminal(board):
         return utility(board)
     for action in actions(board):
-        v = max(v, min_value(result(board, action)))
-        (v, action)
-    return v
+        minv = min_value(result(board, action))
+        if type(minv) is tuple:
+            v = max(v, minv[0])
+        else:
+            v = max(v, minv)
+        max_values.append((v, action))
+    return v, max_values
 
 def min_value(board):
     v = math.inf
@@ -131,6 +122,10 @@ def min_value(board):
     if terminal(board):
         return utility(board)
     for action in actions(board):
-        v = min(v, max_value(result(board, action)))
-        #print((v, action))
-    return v
+        maxv = max_value(result(board, action))
+        if type(maxv) is tuple:
+            v = min(v, maxv[0])
+        else:
+            v = min(v, maxv)
+        min_values.append((v, action))
+    return v, min_values
