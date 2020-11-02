@@ -122,7 +122,7 @@ def max_value(board):
         return utility(board)
     for action in actions(board):
         v = max(v, min_value(result(board, action)))
-        #print((v, action))
+        (v, action)
     return v
 
 def min_value(board):
