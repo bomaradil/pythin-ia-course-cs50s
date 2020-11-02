@@ -82,7 +82,6 @@ def terminal(board):
     game = len([x for y in board for x in y if x == EMPTY])
     return game == 0
 
-
 def utility(board):
     """
     Returns 1 if X has won the game, -1 if O has won, 0 otherwise.
@@ -99,31 +98,24 @@ def minimax(board):
     """
     Returns the optimal action for the current player on the board.
     """
-    v = []
-    if terminal(board):
-        return utility(board)
-    for action in actions(board):
-        v.append(result(board, action))
-    lo = hi = EMPTY 
-    for val in v:
-        if val is EMPTY or val < lo:
-            lo = val
-        elif  val is EMPTY or val > hi:
-            hi = val
-    return (lo, hi)
+    maxv = max_value(board)
+    l = [i for i in maxv[1] if i[0] == maxv[0]]
+    return random.choice(l)[1]
+            
     
-
-
-
 def max_value(board):
     v = -math.inf
     max_values = []
     if terminal(board):
         return utility(board)
     for action in actions(board):
-        v = max(v, min_value(result(board, action)))
-        #print((v, action))
-    return v
+        minv = min_value(result(board, action))
+        if type(minv) is tuple:
+            v = max(v, minv[0])
+        else:
+            v = max(v, minv)
+        max_values.append((v, action))
+    return v, max_values
 
 def min_value(board):
     v = math.inf
@@ -131,6 +123,10 @@ def min_value(board):
     if terminal(board):
         return utility(board)
     for action in actions(board):
-        v = min(v, max_value(result(board, action)))
-        #print((v, action))
-    return v
+        maxv = max_value(result(board, action))
+        if type(maxv) is tuple:
+            v = min(v, maxv[0])
+        else:
+            v = min(v, maxv)
+        min_values.append((v, action))
+    return v, min_values
