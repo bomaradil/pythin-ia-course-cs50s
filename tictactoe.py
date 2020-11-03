@@ -59,7 +59,7 @@ def winner_cells():
     """
     cell = range(3)
     cells = [[(x, y) for y in cell] for x in cell]
-    cells = [[(y, x) for y in cell] for x in cell]
+    cells.extend([[(y, x) for y in cell] for x in cell])
     cells.append([(i, i) for i in cell])
     cells.append([(i, 2-i)for i in cell])
     return cells
